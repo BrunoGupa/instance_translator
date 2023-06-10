@@ -3,13 +3,12 @@ from gurobipy import GRB
 from gurobipy import *
 import movingfp.gen as mfp
 
-def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=False):
+def mfp_constraints(D, B, nodes, time, burnt_nodes, A, distance, return_matrices=False):
     ############# Create the graph ###############
-    ff = graph
-    print("burnt nodes in G_solver", ff.burnt_nodes)
+    #print("burnt nodes in G_solver", ff.burnt_nodes)
 
     ################ Create the model ##############
-    n = n + 1
+    #nodes = nodes + 1
 
     m = Model("mip1")
     m.Params.outputFlag = 1  # 0 - Off  //  1 - On
@@ -21,17 +20,17 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
         m.setParam("TimeLimit", time)
 
     # ------------------------------INPUT --------------------------------
-    I = ff.burnt_nodes
+    I = burnt_nodes
 
     b0 = []
     d0 = []
-    for i in range(n):
+    for i in range(nodes):
         if i in I:
             b0.append(1)  # These are the vertices burned at time j=0
         else:
             b0.append(0)
-    for i in range(n):
-        if i == n-1:
+    for i in range(nodes):
+        if i == nodes-1:
             d0.append(1)  # The bulldozer begins at vertex n-1
         else:
             d0.append(0)
@@ -39,36 +38,36 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
     # ---------------------------- VARIABLES -----------------------------------------------------------
 
     b = []
-    for i in range(n):
+    for i in range(nodes):
         temp = []
         for j in range(B):
             temp.append(0)
         b.append(temp)
-    for i in range(n):
+    for i in range(nodes):
         for j in range(B):
             b[i][j] = m.addVar(vtype=GRB.BINARY, name="b,%s" % str(i + 1) + "," + str(j + 1))
 
     d = []
-    for i in range(n):
+    for i in range(nodes):
         temp = []
         for j in range(B):
             temp.append(0)
         d.append(temp)
-    for i in range(n):
+    for i in range(nodes):
         for j in range(B):
             d[i][j] = m.addVar(vtype=GRB.BINARY, name="d,%s" % str(i + 1) + "," + str(j + 1))
 
     d_prime = []
     for j in range(B):
         temp_1 = []
-        for i in range(n):
+        for i in range(nodes):
             temp_2 = []
             for l in range(D):
                 temp_2.append(0)
             temp_1.append(temp_2)
         d_prime.append(temp_1)
     for j in range(B):
-        for i in range(n):
+        for i in range(nodes):
             for l in range(D):
                 d_prime[j][i][l] = m.addVar(vtype=GRB.BINARY,
                                             name="d_prime,%s" % str(j + 1) + "," + str(i + 1) + "," + str(l + 1))
@@ -76,14 +75,14 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
     p = []
     for j in range(B):
         temp_1 = []
-        for i in range(n):
+        for i in range(nodes):
             temp_2 = []
             for l in range(D):
                 temp_2.append(0)
             temp_1.append(temp_2)
         p.append(temp_1)
     for j in range(B):
-        for i in range(n):
+        for i in range(nodes):
             for l in range(D):
                 p[j][i][l] = m.addVar(vtype=GRB.BINARY,
                                       name="p,%s" % str(j + 1) + "," + str(i + 1) + "," + str(l + 1))
@@ -102,55 +101,55 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
 
     # ---------------------------- CONSTRAINTS ---------------------------------------------------------
 
-    for i in range(n):  # ---------------------------( 2 )
+    for i in range(nodes):  # ---------------------------( 2 )
         for j in range(B):
             if j == 0:
                 m.addConstr(b[i][j] >= b0[i])
             else:
                 m.addConstr(b[i][j] >= b[i][j - 1])
 
-    for i in range(n):  # -------------------------( 3 )
+    for i in range(nodes):  # -------------------------( 3 )
         for j in range(B):
             if j == 0:
                 m.addConstr(d[i][j] >= d0[i])
             else:
                 m.addConstr(d[i][j] >= d[i][j - 1])
 
-    for i in range(n):  # ---------------------------( 4 )
+    for i in range(nodes):  # ---------------------------( 4 )
         for j in range(B):
             m.addConstr(b[i][j] + d[i][j] <= 1)
 
-    for i in range(n-1):  # ---------------------------( 5 )
+    for i in range(nodes - 1):  # ---------------------------( 5 )
         for j in range(B):
-            for k in range(n-1):
+            for k in range(nodes - 1):
                 if j == 0:
-                    m.addConstr(b[i][j] + d[i][j] >= b0[k] * ff.A[k, i])
+                    m.addConstr(b[i][j] + d[i][j] >= b0[k] * A[k, i])
                 else:
-                    m.addConstr(b[i][j] + d[i][j] >= b[k][j - 1] * ff.A[k, i])
+                    m.addConstr(b[i][j] + d[i][j] >= b[k][j - 1] * A[k, i])
             # k == n such as d[n][0] = 1, remains defended for every t.
 
-    for i in range(n):  # ---------------------------( 6 y 7 )
+    for i in range(nodes):  # ---------------------------( 6 y 7 )
         d0[i] = 0
-    d0[n-1] = 1
+    d0[nodes - 1] = 1
 
-    for i in range(n):  # ---------------------------( 8 )
+    for i in range(nodes):  # ---------------------------( 8 )
         for j in range(B):
             if j == 0:
                 m.addConstr(d_prime[j][i][0] >= d0[i])
             else:
                 m.addConstr(d_prime[j][i][0] >= d[i][j - 1])
 
-    for i in range(n):  # ---------------------------( 9 )
+    for i in range(nodes):  # ---------------------------( 9 )
         for j in range(B):
             m.addConstr(d_prime[j][i][D - 1] == d[i][j])
 
-    for i in range(n):  # ---------------------------( 10 )
+    for i in range(nodes):  # ---------------------------( 10 )
         for j in range(B):
             for k in range(1, D):
                 m.addConstr(d_prime[j][i][k] >= d_prime[j][i][k - 1])
 
     for j in range(B):  # ---------------------------( 11 y 12 )
-        for i in range(n):
+        for i in range(nodes):
             for k in range(D):
                 if k == 0:
                     if j == 0:
@@ -163,14 +162,14 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
     for j in range(B):  # ---------------------------( 13 )
         for k in range(D):
             sum_ = 0
-            for i in range(n):
+            for i in range(nodes):
                 sum_ = sum_ + p[j][i][k]
             m.addConstr(sum_ == 1)
 
     for j in range(B):  # ---------------------------( 14, 15 y 16)
         for k in range(D):
             sum_ = 0
-            for i in range(n):
+            for i in range(nodes):
                 if k == 0:
                     if j == 0:
                         sum_ = sum_ + d_prime[j][i][k] - d0[i]
@@ -178,7 +177,7 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
                         sum_ = sum_ + d_prime[j][i][k] - d[i][j - 1]
                 else:
                     sum_ = sum_ + d_prime[j][i][k] - d_prime[j][i][k - 1]
-            for i in range(n):
+            for i in range(nodes):
                 if k == 0:
                     if j == 0:
                         m.addConstr(p[j][i][k] >= d0[i] * (1 - sum_))
@@ -189,10 +188,10 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
 
     for j in range(B):  # ---------------------------( 17 y 18 )
         sum_1 = 0
-        for l in range(n):
+        for l in range(nodes):
             sum_1_a = 0
-            for i in range(n):
-                sum_1_a = sum_1_a + p[j][i][0] * ff.D[i][l]
+            for i in range(nodes):
+                sum_1_a = sum_1_a + p[j][i][0] * distance[i][l]
             if j == 0:
                 sum_1 = sum_1 + sum_1_a * d0[l]
             else:
@@ -200,10 +199,10 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
         sum_2 = 0
         for k in range(1, D):
             sum_2_a = 0
-            for l in range(n):
+            for l in range(nodes):
                 sum_2_b = 0
-                for i in range(n):
-                    sum_2_b = sum_2_b + p[j][i][k] * ff.D[i][l]
+                for i in range(nodes):
+                    sum_2_b = sum_2_b + p[j][i][k] * distance[i][l]
                 sum_2_a = sum_2_a + sum_2_b * p[j][l][k - 1]
             sum_2 = sum_2 + sum_2_a
         sum_3 = sum_1 + sum_2
@@ -214,7 +213,7 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
 
     for j in range(B):  # ---------------------------( 19 )
         sum_ = 0
-        for i in range(n):
+        for i in range(nodes):
             for k in range(D):
                 if k == 0:
                     if j == 0:
@@ -278,7 +277,7 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
                 # print(str(varName) + ": " + str(v.x))
 
         d = []
-        for i in range(n):
+        for i in range(nodes):
             temp = []
             for j in range(B):
                 temp.append(0)
@@ -296,7 +295,7 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
                 k = 0
 
         b = []
-        for i in range(n):
+        for i in range(nodes):
             temp = []
             for j in range(B):
                 temp.append(0)
@@ -316,7 +315,7 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
         d_prime = []
         for j in range(B):
             temp1 = []
-            for i in range(n):
+            for i in range(nodes):
                 temp2 = []
                 for j in range(D):
                     temp2.append(0)
@@ -334,7 +333,7 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
             if (i + 1) % D == 0:
                 j = j + 1
                 k = 0
-            if (i + 1) % (n * D) == 0:
+            if (i + 1) % (nodes * D) == 0:
                 j = 0
                 k = 0
                 l += 1
@@ -342,7 +341,7 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
         p = []
         for j in range(B):
             temp1 = []
-            for i in range(n):
+            for i in range(nodes):
                 temp2 = []
                 for j in range(D):
                     temp2.append(0)
@@ -360,16 +359,16 @@ def mfp_constraints(D, B, n, graph, time, firefighters = 1, return_matrices=Fals
             if (i + 1) % D == 0:
                 j = j + 1
                 k = 0
-            if (i + 1) % (n * D) == 0:
+            if (i + 1) % (nodes * D) == 0:
                 j = 0
                 k = 0
                 l += 1
 
         defense = []
-        defense.append([n-1, 0, 0])
+        defense.append([nodes - 1, 0, 0])
         for l in range(B):
             for k in range(D):
-                for i in range(n):
+                for i in range(nodes):
                     if p[l][i][k] == 1:
                         defense.append([i, l + 1,k])
                         break

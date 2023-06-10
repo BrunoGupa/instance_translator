@@ -6,37 +6,30 @@ from gens_for_paper import get_seed
 # To get the max_path in start_recursion
 D_path = {}
 D_path_n = {}
-for i in range(10):
+for i in range(1):
     D_path[i] = []
     D_path_n[i] = []
 
 
-def start_recursion(n, p, dim, num_fires, fighter_pos, lambda_d, instance, instances=None, node_list=None):
+def start_recursion(nodes, burnt_nodes, distance, instances=None, node_list=None):
     global D_path, D_path_n
-    ss = get_seed(nodes=n,
-                  instance=instance,
-                  instances=instances,
-                  node_list=node_list
-                  )
-    generator = np.random.default_rng(ss)
 
-    graph = mfp.erdos_connected(n, p, dim, fighter_pos, num_fires, generator)
-    burned = set(graph.burnt_nodes)
-
+    print("---------------------------------------")
+    burned = set(burnt_nodes)
+    print("burnt", burnt_nodes)
+    print("distances", distance)
     # Quit all burnt nodes
-    all_nodes = [node for node in range(n + 1) if node not in burned]
+    all_nodes = [node for node in range(nodes + 1) if node not in burned]
 
     # also quit the anchor point n
     # Note that if anchor n is in the best path = [n, a, b, ...] the length of the path will be
     # smaller by removing n, path' = [a, b, ...], and the nodes to generate D will be the same.
-    all_nodes.remove(n)
-
-    graph.D = graph.D * lambda_d
+    all_nodes.remove(nodes)
 
     # Considering all paths that don't contain the anchor point
-    D_small = recursion_D(graph.D, all_nodes, length_path=0, path=None, available_nodes=None)
+    D_small = recursion_D(distance, all_nodes, length_path=0, path=None, available_nodes=None)
     # Considering all paths starting with "a"
-    D_small_n = recursion_D_fixing_n(graph.D, all_nodes, n, length_path=0, path=None, available_nodes=None)
+    D_small_n = recursion_D_fixing_n(distance, all_nodes, nodes, length_path=0, path=None, available_nodes=None)
     # If the path start with the anchor point, we must subtract one unit from the result
     D_small_n = D_small_n - 1
 

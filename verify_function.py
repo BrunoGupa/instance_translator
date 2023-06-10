@@ -15,20 +15,12 @@ def get_path(path):
     return solution
 
 
-def verify(n, instance, mult, num_fires, dim, path, node_list=None, instances=None):
-    ss = get_seed(nodes=n,
-                  instance=instance,
-                  instances=instances,
-                  node_list=node_list
-                  )
-    generator = np.random.default_rng(ss)
+def verify(n, burnt_nodes, A, distance, path, node_list=None, instances=None):
+
 
     solution = get_path(path)
-    p = 2.5 / n
 
-    ff = mfp.erdos_connected(n, p, dim, None, num_fires, generator)
-
-    burned = set(ff.burnt_nodes)
+    burned = burnt_nodes
     G = nx.Graph()
 
     for i in range(n + 1):
@@ -36,12 +28,12 @@ def verify(n, instance, mult, num_fires, dim, path, node_list=None, instances=No
 
     for i in range(n):
         for j in range(n):
-            if ff.A[i][j] == 1:
+            if A[i][j] == 1:
                 G.add_edge(i, j)
 
     nx.draw(G)
-    mov = ff.D.tolist()
-    mov = [[mult * i for i in inner] for inner in mov]
+    mov = distance.tolist()
+
 
     ordered_list = []
     for i in range(len(mov)):

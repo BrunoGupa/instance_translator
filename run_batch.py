@@ -3,7 +3,7 @@ from get_D_value import start_recursion
 
 
 instances = 10 # num. of total instances with the same global seed  for each number of nodes
-n_list = [10, 20, 30, 40] # number of nodes of the graphs
+n_list = [10] # number of nodes of the graphs
 p_list = None  # ex. prob of each edge = 0.5
 pn_list = [2.5]  # ex.: prob of each edge = 2.5/n
 d_list = [2, 7]  # the lambda value to be multiplied by the distance matrix
@@ -29,11 +29,11 @@ for n in n_list:
 
     for burnt_nodes in bn_list:
         if threshold_time is None:
-            json_name = f'verify_{n}_{burnt_nodes}.json'
-            cvs_name = f"verify_{n}_{burnt_nodes}.csv"
+            json_name = f'covert_{n}_{burnt_nodes}.json'
+            cvs_name = f"convert_{n}_{burnt_nodes}.csv"
         else:
-            json_name = f'verify_{n}_{burnt_nodes}_{threshold_time}.json'
-            cvs_name = f"verify_{n}_{burnt_nodes}_{threshold_time}.csv"
+            json_name = f'convert_{n}_{burnt_nodes}_{threshold_time}.json'
+            cvs_name = f"convert_{n}_{burnt_nodes}_{threshold_time}.csv"
 
         binary_dic = {}
         for i in range(instances):
@@ -55,9 +55,13 @@ for n in n_list:
 
                         print("n=", n, "p=", p, "dim=", dim, "burnt_nodes=", burnt_nodes,
                               "instance", instance, "lambda", lambda_d, "D", D)
+                        break
+                    break
+                break
+            break
 
                         # We solve finding the minimum B for which the process finishes
-                        find_B_suf(instance, n, p, dim, burnt_nodes, lambda_d, threshold_time, binary_dic,
-                                   json_name, cvs_name, B_base, D, node_list=n_list, instances=instances)
+                        #find_B_suf(instance, n, p, dim, burnt_nodes, lambda_d, threshold_time, binary_dic,
+                        #           json_name, cvs_name, B_base, D, node_list=n_list, instances=instances)
 
 
