@@ -5,7 +5,7 @@ from bulldozer_to_MFP import distance_matrix
 import numpy as np
 import os
 
-BATCH_NAME = "ahuev"
+BATCH_NAME = "ahuev-b" # b referes to the new fire-burnt
 
 nodes = 40 # including the anchor point
 n_list = [39]
@@ -33,7 +33,7 @@ T_SHOOT = 0.1
 T_ANY = 0.025
 POS_BULL = [SQUARE_SHAPE-1, SQUARE_SHAPE-1]
 BULL_POS = f'{SQUARE_SHAPE-1}.{SQUARE_SHAPE-1}'
-POS_FIRE = (5, 0)
+POS_FIRE = (4,5) #(5, 0)
 
 parameters = {
     'nrows': SQUARE_SHAPE,
@@ -68,7 +68,7 @@ directory = "runs_grid/jsons/"
 os.makedirs(directory, exist_ok=True)
 os.makedirs("runs_grid/csv_s/", exist_ok=True)
 
-for instance in range(4):
+for instance in range(8):
     instance_name = f"{BATCH_NAME}-{instance}"
     T_MOVE = move_values[instance]["T_MOVE"]
     T_SHOOT = move_values[instance]["T_SHOOT"]
