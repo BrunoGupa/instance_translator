@@ -50,15 +50,25 @@ def recursion_D(distance, all_nodes, length_path=0, path=None, available_nodes=N
 
     if available_nodes is None:
         available_nodes = [node for node in all_nodes if node not in path]
-
+    #print("path", path)
+    #print("availabe_nodes", available_nodes)
     # base case
     if length_path > 1:
         # We have added a one node more
         D = len(path) - 1
         return D
     if len(available_nodes) == 0:
+        #print(path)
+
         D = len(path)
-        D_path[D].append(path)
+        #print(D)
+        #print(D_path)
+        try:
+            # Attempt to access a key that may cause KeyError
+            D_path[D].append(path)
+        except KeyError:
+            # Handle the KeyError exception
+            pass  # Do nothing, or you can add your own custom error handling code here
         return D
 
     if len(available_nodes) > 0:

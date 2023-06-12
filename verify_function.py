@@ -16,20 +16,21 @@ def get_path(path):
 
 
 def verify(n, burnt_nodes, A, distance, path, node_list=None, instances=None):
-
-
+    # n contains the anchor poit (n = 40)
+    # A is 39 x 39 Matrix
     solution = get_path(path)
 
-    burned = burnt_nodes
+    burned = set(burnt_nodes)
     G = nx.Graph()
 
-    for i in range(n + 1):
+    for i in range(n):
         G.add_node(i)
-
+    n = n - 1 # quit the anchor point
     for i in range(n):
         for j in range(n):
             if A[i][j] == 1:
                 G.add_edge(i, j)
+
 
     nx.draw(G)
     mov = distance.tolist()

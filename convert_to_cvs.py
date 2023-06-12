@@ -9,14 +9,12 @@ def json_to_csv(json_name, cvs_name):
 
 
     num_nodes = []
-    p = []
-    dim = []
     burnt_nodes = []
     instance = []
-    lambda_d = []
+
 
     D = []
-    T = []
+    B = []
     infeasible = []
     runtime = []
     not_interrupted = []
@@ -28,8 +26,6 @@ def json_to_csv(json_name, cvs_name):
 
     is_upper_bound = []
     D_max = []
-    total_nodes = []
-    interpoints = []
 
     for key in moving.keys():
         for n in range(len(moving[key])):
@@ -39,25 +35,17 @@ def json_to_csv(json_name, cvs_name):
             num_nodes.append(x)
 
             x = moving[key][n][0][1]
-            p.append(x)
-
-            x = moving[key][n][0][2]
-            dim.append(x)
-
-            x = moving[key][n][0][3]
             burnt_nodes.append(x)
 
-            x = moving[key][n][0][4]
+            x = moving[key][n][0][2]
             instance.append(x)
-
-            x = moving[key][n][0][5]
-            lambda_d.append(x)
 
             x = moving[key][n][1][0]
             D.append(x)
 
+
             x = moving[key][n][1][1]
-            T.append(x)
+            B.append(x)
 
             x = moving[key][n][1][2]
             infeasible.append(x)
@@ -87,14 +75,11 @@ def json_to_csv(json_name, cvs_name):
     results = {}
 
     results["num_nodes"] = num_nodes
-    results["p"] = p
-    results["dim"] = dim
     results["burnt_nodes"] = burnt_nodes
     results["instance"] = instance
-    results["lambda_d"] = lambda_d
 
     results["D"] = D
-    results["T"] = T
+    results["B"] = B
 
     results["algorithm"] = algorithm
 

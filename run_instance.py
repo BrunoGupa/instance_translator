@@ -3,17 +3,25 @@ from get_D_value import start_recursion
 from network_grid import adjency
 from bulldozer_to_MFP import distance_matrix
 import numpy as np
+import os
 
-instance_name = "ahuev"
+BATCH_NAME = "ahuev"
 
 nodes = 40 # including the anchor point
 n_list = [39]
 
+
+
 move_values = {
-    0: {"T_MOVE": 0.025, "T_SHOOT": 0.1, "T_ANY": 0.025},
-    1: {"T_MOVE": 0.05, "T_SHOOT": 0.3, "T_ANY": 0.05},
-    2: {"T_MOVE": 0.1, "T_SHOOT": 0.5, "T_ANY": 0.05},
-    3: {"T_MOVE": 0.5, "T_SHOOT": 0.5, "T_ANY": 0.05},
+    0: {"T_MOVE": 0.025, "T_SHOOT": 0.1, "T_ANY": 0.025, "D": [2, 7]},
+    1: {"T_MOVE": 0.05, "T_SHOOT": 0.3, "T_ANY": 0.05, "D": [3]},
+    2: {"T_MOVE": 0.1, "T_SHOOT": 0.5, "T_ANY": 0.05, "D": [2]},
+    3: {"T_MOVE": 0.5, "T_SHOOT": 0.5, "T_ANY": 0.05, "D": [2]},
+
+    4: {"T_MOVE": 0.1, "T_SHOOT": 0.15, "T_ANY": 0.03, "D": [4]},
+    5: {"T_MOVE": 0.2, "T_SHOOT": 0.025, "T_ANY": 0.025, "D": [5]},
+    6: {"T_MOVE": 0.3, "T_SHOOT": 0.1, "T_ANY": 0.025, "D": [3]},
+    7: {"T_MOVE": 0.4, "T_SHOOT": 0.05, "T_ANY": 0.05, "D": [3]},
 }
 
 anchor_point = [9, 9]
@@ -54,22 +62,28 @@ A = adjency(grid)
 # Convert the grid to numpy array
 grid = np.array(grid)
 
-for i in range(4):
-    instance_name = f"ahuev_{i}"
-    T_MOVE = move_values[i]["T_MOVE"]
-    T_SHOOT = move_values[i]["T_SHOOT"]
-    T_ANY = move_values[i]["T_ANY"]
+directory = "runs_grid/jsons/"
+#json_name_bin = "instance_40_ahuev_0.json"
+
+os.makedirs(directory, exist_ok=True)
+os.makedirs("runs_grid/csv_s/", exist_ok=True)
+
+for instance in range(4):
+    instance_name = f"{BATCH_NAME}-{instance}"
+    T_MOVE = move_values[instance]["T_MOVE"]
+    T_SHOOT = move_values[instance]["T_SHOOT"]
+    T_ANY = move_values[instance]["T_ANY"]
     distance = distance_matrix(grid, anchor_point, T_MOVE, T_SHOOT, T_ANY)
 
     print("distance form 0:5", distance[34,39])
 
 
     # Print adjacency matrix
-    print("Adjacency Matrix:")
-    i = 1
-    for row in A:
-        print(i, row)
-        i += 1
+    #print("Adjacency Matrix:")
+    #i = 1
+    #for row in A:
+    #    print(i, row)
+    #    i += 1
 
 
 
@@ -87,21 +101,17 @@ for i in range(4):
     cvs_name = f"verify_{nodes}_{instance_name}.csv"
 
     binary_dic = {}
-    for i in range(instances):
-        binary_dic[i] = []
+    binary_dic[0] = []
 
     # D defending rounds
     # B burning rounds
     # nodes vertices of the graph
 
-    D, _ = start_recursion(nodes,
-                           burnt_nodes,
-                           distance,
-                           instances=instances,
-                           node_list=n_list)
 
-    print("n=", nodes, "burnt_nodes=", burnt_nodes, "D", D)
+    for D in move_values[instance]["D"]:
 
-    # We solve finding the minimum B for which the process finishes
-    find_B_suf(nodes, burnt_nodes, A, distance, threshold_time, binary_dic,
-               json_name, cvs_name, B_base, D, node_list=n_list, instances=instances)
+        print("n=", nodes, "instance", instance, "instance-name", instance_name, "burnt_nodes=", burnt_nodes, "D", D)
+
+        # We solve finding the minimum B for which the process finishes
+        find_B_suf(nodes, instance, burnt_nodes, A, distance, threshold_time, binary_dic,
+                   json_name, cvs_name, B_base, D, node_list=n_list, instances=instances)
