@@ -1,6 +1,6 @@
 import networkx as nx
 import numpy as np
-
+# este no sirve, eliminarlo
 class GridToGraph:
     def __init__(self, namespace):
         self.A = namespace['A']
