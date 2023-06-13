@@ -10,10 +10,12 @@ BATCH_NAME = "ahuev-b" # b referes to the new fire-burnt
 nodes = 40 # including the anchor point
 n_list = [39]
 
+POS_FIRE = (4,5) #(5, 0)
+burnt_nodes = [17]#[21] # list of nodes where the fire starts
 
 
 move_values = {
-    0: {"T_MOVE": 0.025, "T_SHOOT": 0.1, "T_ANY": 0.025, "D": [2, 7]},
+    0: {"T_MOVE": 0.025, "T_SHOOT": 0.1, "T_ANY": 0.025, "D": [7]},
     1: {"T_MOVE": 0.05, "T_SHOOT": 0.3, "T_ANY": 0.05, "D": [3]},
     2: {"T_MOVE": 0.1, "T_SHOOT": 0.5, "T_ANY": 0.05, "D": [2]},
     3: {"T_MOVE": 0.5, "T_SHOOT": 0.5, "T_ANY": 0.05, "D": [2]},
@@ -25,7 +27,6 @@ move_values = {
 }
 
 anchor_point = [9, 9]
-burnt_nodes = [21] # list of nodes where the fire starts
 
 SQUARE_SHAPE = 10
 T_MOVE = 0.025
@@ -33,7 +34,6 @@ T_SHOOT = 0.1
 T_ANY = 0.025
 POS_BULL = [SQUARE_SHAPE-1, SQUARE_SHAPE-1]
 BULL_POS = f'{SQUARE_SHAPE-1}.{SQUARE_SHAPE-1}'
-POS_FIRE = (4,5) #(5, 0)
 
 parameters = {
     'nrows': SQUARE_SHAPE,
