@@ -1,0 +1,3 @@
+,num_nodes,burnt_nodes,instance,D,B,algorithm,infeasible,runtime,not_interrupted,objective,is_upper_bound,D_max,defended_seq,distances
+0,40,[21],0,2,1,moving,False,3.5552289485931396,True,1.0,True,[39],"[[39, 0, 0], [28, 1, 0], [22, 1, 1]]",[0.65]
+1,40,[21],0,7,1,moving,False,24.614966869354248,True,1.0,True,[39],"[[39, 0, 0], [39, 1, 0], [39, 1, 1], [39, 1, 2], [39, 1, 3], [39, 1, 4], [28, 1, 5], [22, 1, 6]]",[0.65]
