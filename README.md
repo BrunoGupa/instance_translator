@@ -1,6 +1,6 @@
 # RL_MFP
 
-This repository contains a translator from instances of the Moving Firefighter Problem (MFP) into the Bulldozer environment. The MFP is a problem derived from graph theory. Here, we provide an implementation to translate instances of the MFP into an environment suitable for solving with Deep Reinforcement Learning using the Bulldozer framework.
+This repository contains a translator from instances of the Moving Firefighter Problem (MFP) into the Bulldozer Reinforcement Learning environment. The MFP is a problem derived from graph theory. Here, we provide an implementation to translate instances of the MFP into an environment suitable for solving with Deep Reinforcement Learning using the Bulldozer framework.
 
 ## Results
 
