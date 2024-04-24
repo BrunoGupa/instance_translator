@@ -6,9 +6,9 @@ This repository contains a translator from instances of the Moving Firefighter P
 
 We share the results of running both algorithms (MFP and Bulldozer) on translated instances:
 
-1. ![Graph 1](./MFP-of-Grid-instances-objective-with-RL.png)
-2. ![Graph 2](./MFP-of-Grid-instances-objective.png)
-3. ![Graph 3](./MFP-of-Grid-instances-runtime.png)
+![Graph 1](./MFP-of-Grid-instances-objective-with-RL.png)
+![Graph 2](./MFP-of-Grid-instances-objective.png)
+![Graph 3](./MFP-of-Grid-instances-runtime.png)
 
 ## Links
 
